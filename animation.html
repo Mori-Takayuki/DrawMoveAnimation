@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Drawing</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // キャンバスのサイズを固定
+        canvas.width = 1510;
+        canvas.height = 710;
+
+        // sessionStorageから描かれた絵のデータを取得
+        const imageData = sessionStorage.getItem('image');
+        if (!imageData) {
+            alert('No image data found.');
+            window.location.href = 'DrawMoveAnimation.html'; // 描画ページのURLを指定
+        }
+
+        // Base64形式の画像データをImageオブジェクトに変換
+        const image = new Image();
+        image.onload = () => {
+            // 描かれた絵をCanvas上に描画
+            drawImage(image);
+        };
+        image.src = imageData;
+
+        // マウスの位置を保持する変数
+        let mouseX = 0;
+        let mouseY = 0;
+
+        // マウス移動イベントのリスナーを設定
+        canvas.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX - canvas.getBoundingClientRect().left;
+            mouseY = e.clientY - canvas.getBoundingClientRect().top;
+        });
+
+        // 描画関数
+        function drawImage(image) {
+            // 描画をクリアして再描画
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const centerX = mouseX - image.width / 2; // 絵の中心のX座標
+            const centerY = mouseY - image.height / 2; // 絵の中心のY座標
+            ctx.drawImage(image, centerX, centerY, image.width, image.height);
+
+            // アニメーション
+            requestAnimationFrame(() => drawImage(image));
+        }
+    </script>
+</body>
+</html>

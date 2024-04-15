@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+    <style>
+        canvas {
+            border: 2px solid black;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <label for="penColor">　　　　　　　　　　　　　　　　　　描いた絵をマウスで動かせます<br>
+        ペンの色:</label>
+        <select id="penColor">
+          <option value="red">赤</option>
+            <option value="blue">青</option>
+            <option value="yellow">黄</option>
+            <option value="green">緑</option>
+            <option value="orange">橙</option>
+            <option value="cyan">水色</option>
+            <option value="lime">黄緑</option>
+            <option value="purple">紫</option>
+            <option value="black">黒</option>
+            <option value="white">白</option>
+        </select>
+        <label for="bgColor">　背景の色:</label>
+        <select id="bgColor">
+          <option value="red">赤</option>
+            <option value="blue">青</option>
+            <option value="yellow">黄</option>
+            <option value="green">緑</option>
+            <option value="black">黒</option>
+            <option value="white">白</option>
+            <option value="orange">橙</option>
+            <option value="cyan">水色</option>
+            <option value="lime">黄緑</option>
+            <option value="purple">紫</option>
+        </select>
+      &nbsp;　
+<label for="penWidth">ペンの太さ:</label>
+        <select id="penWidth">
+            <option value="1">細い</option>
+            <option value="5">普通</option>
+            <option value="10">太い</option>
+        </select>
+    </div>
+    <canvas id="canvas" width="800" height="600"></canvas>
+    <button id="save">決定</button>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // ペンの色、背景の色、ペンの太さを取得
+        const penColor = document.getElementById('penColor');
+        const bgColor = document.getElementById('bgColor');
+        const penWidth = document.getElementById('penWidth');
+        const eraser = document.getElementById('eraser');
+
+        // 初期設定
+        let drawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        ctx.strokeStyle = penColor.value;
+        ctx.fillStyle = bgColor.value;
+        ctx.lineWidth = penWidth.value;
+
+        // 描画
+        function draw(e) {
+            if (!drawing) return;
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.stroke();
+            [lastX, lastY] = [e.offsetX, e.offsetY];
+        }
+
+		// 背景色変更
+        bgColor.addEventListener('change', () => {
+            ctx.fillStyle = bgColor.value;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        });
+		
+        // マウス制御
+        canvas.addEventListener('mousedown', (e) => {
+            drawing = true;
+            [lastX, lastY] = [e.offsetX, e.offsetY];
+        });
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', () => drawing = false);
+        canvas.addEventListener('mouseout', () => drawing = false);
+		
+        // ペン色変更
+        penColor.addEventListener('change', () => {
+            ctx.strokeStyle = penColor.value;
+        });
+
+        // ペンの太さを変更
+        penWidth.addEventListener('change', () => {
+            ctx.lineWidth = penWidth.value;
+        });
+
+        // アニメーションページに描画を転送
+        document.getElementById('save').addEventListener('click', () => {
+            const dataURL = canvas.toDataURL();
+            sessionStorage.setItem('image', dataURL);
+            window.location.href = 'animation.html'; // アニメーションページのURLを指定
+        });
+    </script>
+</body>
+</html>
